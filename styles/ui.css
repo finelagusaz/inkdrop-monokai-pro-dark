@@ -1,0 +1,237 @@
+@layer theme.ui {
+  /*
+   * Monokai Pro Dark - semantic UI overrides for Inkdrop v6.
+   *
+   * Almost nothing needs to be named here: tokens.css replaces the --hsl-* /
+   * --color-* ramps, and the ~890 built-in UI variables resolve through those.
+   * What is listed below is only what the ramps cannot express - places where
+   * Inkdrop's depth order differs from Monokai's, and accents that must land on
+   * a specific Monokai color rather than a step of a ramp.
+   *
+   * Surfaces run darkest on the left to lightest on the right, the way Monokai
+   * Pro treats app chrome vs. content:
+   *
+   *   sidebar #19181A  ->  note list #221F22  ->  editor #2D2A2E
+   *   (neutral-950)        (neutral-900)          (neutral-800)
+   *
+   * NOTE: --page-background is deliberately absent from the plain :root block.
+   * The built-in acrylic support works by setting it to `transparent` inside
+   * `:root:has(body.acrylic-window)` in the theme.ui.base layer. Because
+   * theme.ui outranks theme.ui.base regardless of selector specificity, a bare
+   * `:root { --page-background: ... }` here would win over that branch and
+   * disable acrylic entirely. Its default (neutral-950) is already the color we
+   * want, so leave it alone. See the acrylic block at the bottom.
+   */
+
+  :root {
+    /*-------------------
+      Brand Colors
+    --------------------*/
+    /* Monokai has no blue; its cool accent is the cyan #78DCE8. tokens.css
+       anchors the blue ramp on it, so --primary-color lands there already -
+       restated at full opacity because the default fades it to 80%. */
+    --primary-color: var(--color-blue-500); /* #78DCE8 */
+    --secondary-color: var(--color-neutral-300);
+
+    /*-------------------
+      Page
+    --------------------*/
+    --text-color: var(--color-neutral-200); /* #CAC9C9 */
+
+    /*-------------------
+      Links
+    --------------------*/
+    --link-color: var(--color-blue-500);
+    --link-hover-color: var(--color-blue-400);
+
+    /*-------------------
+      Highlighted Text
+    --------------------*/
+    --highlight-background: hsl(var(--hsl-yellow-500) / 30%);
+    --highlight-color: var(--color-neutral-50);
+
+    /*-------------------
+      Emotive Colors
+    --------------------*/
+    --info-color: var(--color-blue-500); /* #78DCE8 */
+    --warning-color: var(--color-yellow-500); /* #FFD866 */
+
+    /*-------------------
+      Neutral Text
+    --------------------*/
+    --dark-text-color: var(--color-neutral-50);
+    --muted-text-color: var(--color-neutral-400); /* #939293 */
+    --light-text-color: var(--color-neutral-500); /* #727072 */
+    --unselected-text-color: var(--color-neutral-400);
+    --selected-text-color: var(--color-neutral-50); /* #FCFCFA */
+    --disabled-text-color: var(--color-neutral-600);
+
+    /*-------------------
+      Borders
+    --------------------*/
+    /* Monokai's grey4 #5B595C, blended so borders read as a seam rather than a
+       drawn line. The solid variants are used where alpha would show a surface
+       change through the border. */
+    --border-color: hsl(var(--hsl-neutral-600) / 45%);
+    --strong-border-color: hsl(var(--hsl-neutral-600) / 70%);
+    --internal-border-color: hsl(var(--hsl-neutral-600) / 35%);
+    --solid-border-color: var(--color-neutral-600); /* #5B595C */
+    --solid-internal-border-color: var(--color-neutral-700);
+
+    /*-------------------
+      Form Input
+    --------------------*/
+    --input-background: var(--color-neutral-950);
+    --input-focus-border-color: var(--color-blue-500);
+    --focused-form-border-color: var(--color-blue-500);
+    --focused-form-muted-border-color: hsl(var(--hsl-blue-500) / 50%);
+    --focused-outline-color: hsl(var(--hsl-blue-500) / 35%);
+    --form-select-background: var(--color-neutral-950);
+
+    /*-------------------
+      Button
+    --------------------*/
+    --button-background: var(--color-neutral-700) none; /* #403E41 */
+    --button-hover-background-color: var(--color-neutral-600);
+    --basic-button-hover-background: hsl(var(--hsl-neutral-700) / 60%);
+
+    /*-------------------
+      Elements
+    --------------------*/
+    --kbd-background: var(--color-neutral-700);
+    --kbd-border-color: var(--color-neutral-600);
+
+    /*-------------------
+      Header
+    --------------------*/
+    --header-text-color: var(--color-neutral-50);
+
+    /*-------------------
+      Segment
+    --------------------*/
+    --segment-background: var(--color-neutral-900);
+    --secondary-segment-background: var(--color-neutral-800);
+    --grouped-segment-hover-background: hsl(var(--hsl-neutral-700) / 60%);
+    --piled-segments-background: var(--color-neutral-900);
+
+    /*-------------------
+      Menu / Dropdown / Popup
+    --------------------*/
+    --menu-background: var(--color-neutral-900);
+    --vertical-menu-background: var(--color-neutral-900);
+    --tabular-menu-active-background: none var(--color-neutral-800);
+    --dropdown-menu-background: var(--color-neutral-900);
+    --inline-dropdown-menu-background: var(--color-neutral-900);
+    --popup-background: var(--color-neutral-950);
+    --tooltip-background: var(--color-neutral-950);
+
+    /*-------------------
+      Table
+    --------------------*/
+    --table-background: var(--color-neutral-900);
+    --table-header-background: var(--color-neutral-800);
+
+    /*-------------------
+      Modal
+    --------------------*/
+    --modal-box-header-background: var(--color-neutral-800);
+    --modal-box-content-background: var(--color-neutral-900);
+    --modal-box-actions-background: var(--color-neutral-900);
+
+    /*-------------------
+      Side Bar - the darkest surface
+    --------------------*/
+    --sidebar-background: var(--color-neutral-950); /* #19181A */
+    --sidebar-border-right: 1px solid hsl(var(--hsl-neutral-700) / 60%);
+    --sidebar-menu-item-color: var(--color-neutral-300);
+    --sidebar-menu-active-item-color: var(--color-neutral-50);
+    --sidebar-menu-item-active-background: hsl(var(--hsl-neutral-700) / 70%);
+    --sidebar-menu-section-color: var(--color-neutral-500);
+    --sidebar-sync-status-view-background: hsl(var(--hsl-neutral-900) / 60%);
+    --sidebar-sync-status-view-border-top: 1px solid hsl(var(--hsl-neutral-700) / 60%);
+
+    /*-------------------
+      Note List Bar - one step lighter than the sidebar
+    --------------------*/
+    /* The built-in default is 50% alpha over the page background. Opaque here so
+       the three-surface progression stays legible when acrylic is off. */
+    --note-list-bar-background: var(--color-neutral-900); /* #221F22 */
+    --note-list-bar-border-right: 1px solid hsl(var(--hsl-neutral-700) / 60%);
+    --note-list-bar-pinned-section-header-background: var(--color-neutral-950);
+    --note-list-view-item-header-color: var(--color-neutral-100);
+    --note-list-view-item-separator-border: 1px solid hsl(var(--hsl-neutral-700) / 50%);
+    --note-list-view-item-date-color: var(--color-blue-500);
+    --note-list-view-item-selected-background: hsl(var(--hsl-neutral-700) / 70%);
+    --note-list-view-item-active-background: hsl(var(--hsl-blue-500) / 22%);
+    --note-search-bar-input-background: var(--color-neutral-950);
+
+    /*-------------------
+      Editor - the lightest surface, Monokai's own background
+    --------------------*/
+    --editor-background: var(--color-neutral-800); /* #2D2A2E */
+    --editor-floating-actions-background: hsl(var(--hsl-neutral-700) / 70%);
+    --editor-drawer-background: var(--color-neutral-900);
+    --editor-drawer-border-left: 1px solid hsl(var(--hsl-neutral-700) / 60%);
+
+    /*-------------------
+      Notifications
+    --------------------*/
+    --notification-item-background: hsl(var(--hsl-neutral-950) / 90%);
+
+    /*-------------------
+      Preferences
+    --------------------*/
+    --preferences-sidebar-background: var(--color-neutral-950);
+    --preferences-view-background: var(--color-neutral-900);
+
+    /*-------------------
+      Note Status
+    --------------------*/
+    --note-status-active: var(--color-blue-500); /* #78DCE8 */
+    --note-status-onhold: var(--color-yellow-500); /* #FFD866 */
+    --note-status-completed: var(--color-green-500); /* #A9DC76 */
+    --note-status-dropped: var(--color-red-500); /* #FF6188 */
+
+    /*-------------------
+      Task Progress
+    --------------------*/
+    --task-progress-view-background-color: var(--color-neutral-700);
+    --task-progress-view-foreground-color: var(--color-blue-500);
+    --task-progress-view-completed-color: var(--color-green-500);
+    --task-progress-view-border-color: hsl(var(--hsl-neutral-600) / 45%);
+  }
+
+  /*-------------------------------
+    Acrylic background window
+
+    Re-declared rather than inherited: the surfaces above are opaque, and a
+    plain :root rule in this layer outranks the built-in acrylic branch, so the
+    translucent values have to be restated here or acrylic would have nothing
+    left to show through. Every variable that appears opaque above and needs to
+    be translucent under acrylic must be listed in both places, otherwise the
+    colors jump when acrylic is toggled.
+  --------------------------------*/
+
+  :root:has(body.acrylic-window) {
+    --page-background: transparent;
+    --sidebar-background: hsl(var(--hsl-neutral-950) / 60%);
+    --note-list-bar-background: hsl(var(--hsl-neutral-900) / 65%);
+    --editor-background: hsl(var(--hsl-neutral-800) / 88%);
+    --editor-drawer-background: hsl(var(--hsl-neutral-900) / 80%);
+    --preferences-sidebar-background: hsl(var(--hsl-neutral-950) / 60%);
+    --preferences-view-background: hsl(var(--hsl-neutral-900) / 70%);
+    /* Menus float above the blur and must stay opaque, or the text behind them
+       shows through twice. */
+    --inline-dropdown-menu-background: var(--color-neutral-900);
+    --vertical-menu-background: var(--color-neutral-900);
+  }
+
+  /* Windows composites its own acrylic layer behind the window, so the page
+     needs a dark scrim of its own or the desktop reads straight through.
+     Tinted with Monokai's darkest grey rather than --hsl-black, which the
+     built-in rule uses, to keep the wash inside the palette. */
+  :root:has(body.acrylic-window.platform-win32) {
+    --page-background: hsl(var(--hsl-neutral-950) / 45%);
+    --sidebar-background: hsl(var(--hsl-neutral-950) / 35%);
+  }
+}

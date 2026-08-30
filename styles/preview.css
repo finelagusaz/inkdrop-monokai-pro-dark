@@ -1,0 +1,182 @@
+@layer theme.preview {
+  /*
+   * Monokai Pro Dark - Markdown preview.
+   *
+   * The preview is prose, not code, so it does not repeat the editor's token
+   * colors. Body text stays neutral and the accents mark structure: headings,
+   * links, inline code, callouts. Code blocks keep the editor's own surface so
+   * a snippet looks the same on both sides of the pane.
+   */
+
+  :root {
+    /* Local aliases - the preview reaches for these three surfaces repeatedly
+       and naming them keeps the intent visible at each use site. */
+    --monokai-preview-surface: hsl(var(--hsl-neutral-950) / 55%);
+    --monokai-preview-surface-strong: hsl(var(--hsl-neutral-950) / 75%);
+    --monokai-preview-rule: hsl(var(--hsl-neutral-600) / 45%);
+
+    --mde-preview-line-height: 1.7;
+
+    /*-------------------
+      Headings - one color for all six levels.
+
+      Deliberately unlike the editor, which gives each level its own hue.
+      Inkdrop exposes only --mde-preview-heading-color here, with no per-level
+      variants, so the editor's scale could not be mirrored even if it should
+      be - and it should not: the preview renders headings at real display
+      sizes, where size already carries the hierarchy that hue has to carry in
+      the editor. See the heading block in syntax.css.
+    --------------------*/
+    --mde-preview-heading-color: var(--color-neutral-50);
+    --mde-preview-heading-muted-text-color: var(--color-neutral-400);
+    --mde-preview-heading-border-color: var(--monokai-preview-rule);
+    --mde-preview-heading-border-width: 1px;
+    --mde-preview-h1-border-width: 2px;
+
+    /*-------------------
+      Inline text
+    --------------------*/
+    --mde-preview-link-color: var(--color-blue-500); /* #78DCE8 */
+    --mde-preview-strong-color: var(--color-neutral-50);
+    --mde-preview-em-color: var(--color-neutral-200);
+    --mde-preview-input-placeholder-color: var(--color-neutral-500);
+
+    --mde-preview-inline-code-text-color: var(--color-yellow-500); /* #FFD866 */
+    --mde-preview-inline-code-background-color: var(--monokai-preview-surface);
+    --mde-preview-inline-code-border-color: hsl(var(--hsl-neutral-600) / 40%);
+    --mde-preview-inline-code-border-width: 1px;
+
+    --mde-preview-inline-mark-text-color: var(--color-neutral-50);
+    --mde-preview-inline-mark-background-color: hsl(var(--hsl-yellow-500) / 28%);
+    --mde-preview-inline-mark-underline-color: hsl(var(--hsl-yellow-500) / 60%);
+
+    /*-------------------
+      Blocks
+    --------------------*/
+    --mde-preview-blockquote-text-color: var(--color-neutral-300);
+    --mde-preview-blockquote-border-color: var(--color-neutral-600);
+
+    --mde-preview-hr-border-color: var(--monokai-preview-rule);
+    --mde-preview-hr-background-color: var(--monokai-preview-rule);
+
+    /* Same surface as --md-codeblock-background-color in syntax.css, so a
+       fenced block does not shift shade when the preview opens. */
+    --mde-preview-codeblock-background-color: var(--monokai-preview-surface);
+    --mde-preview-codeblock-border-color: hsl(var(--hsl-neutral-600) / 35%);
+    --mde-preview-codeblock-text-color: var(--color-neutral-100);
+    --mde-preview-codeblock-meta-background-color: var(--monokai-preview-surface-strong);
+    --mde-preview-codeblock-meta-text-color: var(--color-neutral-400);
+
+    --mde-preview-image-background-color: hsl(var(--hsl-neutral-950) / 40%);
+
+    /*-------------------
+      Lists - nesting depth by hue, matching --md-list-mark-* in syntax.css
+    --------------------*/
+    --mde-preview-list-marker-color: var(--color-red-500);
+    --mde-preview-list-marker-2-color: var(--color-yellow-500);
+    --mde-preview-list-marker-3-color: var(--color-blue-500);
+    --mde-preview-task-list-checked-color: var(--color-green-500); /* #A9DC76 */
+
+    /*-------------------
+      Tables
+    --------------------*/
+    --mde-preview-table-head-text-color: var(--color-neutral-50);
+    --mde-preview-table-head-background-color: var(--monokai-preview-surface-strong);
+    --mde-preview-table-border-color: var(--monokai-preview-rule);
+    --mde-preview-table-row-background-color: transparent;
+    --mde-preview-table-row-border-color: hsl(var(--hsl-neutral-600) / 30%);
+    --mde-preview-table-row-stripe-background-color: hsl(var(--hsl-neutral-950) / 35%);
+
+    /*-------------------
+      Footnotes and kbd
+    --------------------*/
+    --mde-preview-footnote-text-color: var(--color-neutral-400);
+    --mde-preview-footnote-border-color: var(--monokai-preview-rule);
+    --mde-preview-footnote-highlight-border-color: var(--color-yellow-500);
+
+    --mde-preview-kbd-text-color: var(--color-neutral-100);
+    --mde-preview-kbd-background-color: var(--color-neutral-700);
+    --mde-preview-kbd-border-color: var(--color-neutral-600);
+    --mde-preview-kbd-shadow-color: hsl(var(--hsl-neutral-950) / 70%);
+
+    /*-------------------
+      GitHub alerts.
+      Five distinct hues, which is what the callout is for - a warning that
+      looks like a note is worse than one that clashes slightly.
+    --------------------*/
+    --gfm-alert-note: var(--color-blue-500); /* #78DCE8 */
+    --gfm-alert-tip: var(--color-green-500); /* #A9DC76 */
+    --gfm-alert-important: var(--color-violet-500); /* #AB9DF2 */
+    --gfm-alert-warning: var(--color-yellow-500); /* #FFD866 */
+    --gfm-alert-caution: var(--color-red-500); /* #FF6188 */
+
+    /*===================
+      Mermaid
+
+      Only the base tokens are set. The other ~100 mermaid variables are defined
+      upstream in terms of these, so they follow without being restated. If a
+      diagram type comes out wrong, add the specific variable here rather than
+      filling in the whole set.
+    ====================*/
+
+    --mermaid-background-color: transparent;
+    --mermaid-text-color: var(--color-neutral-100);
+    --mermaid-title-color: var(--color-neutral-50);
+    --mermaid-line-color: var(--color-neutral-400);
+    --mermaid-arrowhead-color: var(--color-neutral-300);
+    --mermaid-default-link-color: var(--color-neutral-400);
+
+    --mermaid-node-background-color: hsl(var(--hsl-neutral-700) / 70%);
+    --mermaid-node-border-color: var(--color-blue-500);
+    --mermaid-node-text-color: var(--color-neutral-50);
+    --mermaid-label-color: var(--color-neutral-100);
+    --mermaid-edge-label-background-color: var(--color-neutral-900);
+
+    --mermaid-cluster-background-color: hsl(var(--hsl-neutral-950) / 55%);
+    --mermaid-cluster-border-color: hsl(var(--hsl-neutral-600) / 60%);
+    --mermaid-secondary-border-color: hsl(var(--hsl-neutral-600) / 60%);
+    --mermaid-surface-background-color: hsl(var(--hsl-neutral-900) / 70%);
+    --mermaid-surface-border-color: hsl(var(--hsl-neutral-600) / 50%);
+
+    /* Sequence diagrams */
+    --mermaid-note-background-color: hsl(var(--hsl-yellow-500) / 20%);
+    --mermaid-note-border-color: hsl(var(--hsl-yellow-500) / 55%);
+    --mermaid-note-text-color: var(--color-neutral-50);
+    --mermaid-actor-background-color: hsl(var(--hsl-neutral-700) / 70%);
+    --mermaid-actor-border-color: var(--color-blue-500);
+    --mermaid-actor-text-color: var(--color-neutral-50);
+    --mermaid-actor-line-color: hsl(var(--hsl-neutral-500) / 60%);
+    --mermaid-signal-color: var(--color-neutral-300);
+    --mermaid-signal-text-color: var(--color-neutral-100);
+    --mermaid-label-box-background-color: hsl(var(--hsl-neutral-800) / 90%);
+    --mermaid-label-box-border-color: hsl(var(--hsl-neutral-600) / 60%);
+    --mermaid-label-text-color: var(--color-neutral-50);
+    --mermaid-loop-text-color: var(--color-neutral-200);
+    --mermaid-activation-background-color: hsl(var(--hsl-neutral-600) / 60%);
+    --mermaid-activation-border-color: hsl(var(--hsl-neutral-400) / 60%);
+
+    /* Gantt */
+    --mermaid-section-background-color: hsl(var(--hsl-neutral-950) / 45%);
+    --mermaid-alt-section-background-color: transparent;
+    --mermaid-task-background-color: hsl(var(--hsl-blue-500) / 35%);
+    --mermaid-task-border-color: var(--color-blue-500);
+    --mermaid-task-text-color: var(--color-neutral-50);
+    --mermaid-active-task-background-color: hsl(var(--hsl-yellow-500) / 35%);
+    --mermaid-active-task-border-color: var(--color-yellow-500);
+    --mermaid-done-task-background-color: hsl(var(--hsl-green-500) / 30%);
+    --mermaid-done-task-border-color: var(--color-green-500);
+    --mermaid-crit-task-background-color: hsl(var(--hsl-red-500) / 35%);
+    --mermaid-crit-task-border-color: var(--color-red-500);
+    --mermaid-grid-color: hsl(var(--hsl-neutral-600) / 45%);
+    --mermaid-today-line-color: var(--color-red-500);
+
+    /* Theme series - pie slices, class boxes and anything else mermaid colors
+       by index rather than by role. */
+    --mermaid-primary-color: hsl(var(--hsl-blue-500) / 45%);
+    --mermaid-secondary-color: hsl(var(--hsl-violet-500) / 45%);
+    --mermaid-tertiary-color: hsl(var(--hsl-green-500) / 45%);
+    --mermaid-primary-text-color: var(--color-neutral-50);
+    --mermaid-error-background-color: hsl(var(--hsl-red-500) / 30%);
+    --mermaid-error-text-color: var(--color-red-400);
+  }
+}

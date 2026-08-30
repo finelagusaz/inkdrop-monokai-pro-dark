@@ -1,0 +1,41 @@
+{
+  "name": "monokai-pro-dark",
+  "version": "0.1.0",
+  "theme": true,
+  "themeAppearance": "dark",
+  "description": "Monokai Pro dark theme for Inkdrop — UI, editor syntax and Markdown preview in one package",
+  "styleSheets": [
+    "tokens.css",
+    "ui.css",
+    "syntax.css",
+    "preview.css"
+  ],
+  "keywords": [
+    "inkdrop",
+    "theme",
+    "monokai",
+    "dark"
+  ],
+  "repository": "https://github.com/finelagusaz/inkdrop-monokai-theme",
+  "author": "finelagusaz",
+  "license": "MIT",
+  "files": [
+    "styles",
+    "palette.json",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "tokens": "node scripts/gen-tokens.mjs > styles/tokens.css && node scripts/check-tokens.mjs",
+    "palette": "generate-palette",
+    "check": "node scripts/check-tokens.mjs && node scripts/check-variables.mjs && node scripts/check-conditionals.mjs && node scripts/audit-palette.mjs && node scripts/check-acrylic.mjs",
+    "prepublishOnly": "generate-palette",
+    "acrylic": "node scripts/check-acrylic.mjs"
+  },
+  "devDependencies": {
+    "@inkdropapp/theme-dev-helpers": "^0.6.1"
+  },
+  "engines": {
+    "inkdrop": "^6.0.0"
+  }
+}

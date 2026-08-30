@@ -1,0 +1,354 @@
+@layer theme.syntax {
+  /*
+   * Monokai Pro Dark - editor chrome and syntax tokens.
+   *
+   * Roles, as Monokai Pro assigns them:
+   *
+   *   #FF6188  red     keywords, storage, operators, tag names
+   *   #FC9867  orange  parameters and language variables (this/self), italic
+   *   #FFD866  yellow  strings
+   *   #A9DC76  green   function names, attribute names, decorators
+   *   #78DCE8  cyan    types, class names, library/builtin names - italic
+   *   #AB9DF2  purple  numbers, booleans, constants, escapes
+   *   #727072  grey    comments, italic
+   *   #FCFCFA  fg      plain variables - Monokai leaves these uncolored, which
+   *                    is what makes the accents legible. Do not "fix" this.
+   */
+
+  :root {
+    /*-------------------
+      Editor surface
+    --------------------*/
+    /* Matches --editor-background in ui.css. These are two different variables:
+       --editor-background is the pane, --editor-background-color is CodeMirror. */
+    --editor-background-color: var(--color-neutral-800); /* #2D2A2E */
+    --editor-foreground-color: var(--color-neutral-50); /* #FCFCFA */
+    --editor-caret-color: var(--color-neutral-50);
+    --editor-placeholder-color: var(--color-neutral-500);
+
+    --editor-selection-background: hsl(var(--hsl-neutral-600) / 55%);
+    --editor-focused-selection-background: hsl(var(--hsl-neutral-600) / 75%);
+    --editor-selection-match-background-color: hsl(var(--hsl-yellow-500) / 18%);
+    --editor-selection-match-outline: 1px solid hsl(var(--hsl-yellow-500) / 40%);
+
+    --editor-active-line-background-color: hsl(var(--hsl-neutral-700) / 40%);
+    --editor-active-line-gutter-background-color: hsl(var(--hsl-neutral-700) / 40%);
+
+    /*-------------------
+      Gutter
+    --------------------*/
+    --editor-gutter-background-color: transparent;
+    --editor-gutter-background-solid-color: var(--color-neutral-800);
+    --editor-gutter-color: var(--color-neutral-600); /* #5B595C */
+    --editor-gutter-border-right-color: transparent;
+    --editor-gutter-border-right: none;
+
+    /*-------------------
+      Brackets
+    --------------------*/
+    --editor-matching-bracket-background-color: hsl(var(--hsl-neutral-600) / 40%);
+    --editor-matching-bracket-outline: 1px solid hsl(var(--hsl-neutral-400) / 60%);
+    --editor-nonmatching-bracket-background-color: hsl(var(--hsl-red-500) / 22%);
+    --editor-nonmatching-bracket-outline: 1px solid hsl(var(--hsl-red-500) / 60%);
+
+    /*-------------------
+      Search
+    --------------------*/
+    --editor-search-match-background-color: hsl(var(--hsl-yellow-500) / 25%);
+    --editor-search-match-outline: 1px solid hsl(var(--hsl-yellow-500) / 45%);
+    --editor-search-match-selected-background-color: hsl(var(--hsl-orange-500) / 45%);
+    --editor-search-match-selected-outline: 1px solid var(--color-orange-500);
+
+    /*-------------------
+      Invisibles and errors
+      (these are visible for this setup: showInvisibles and
+      highlightTrailingWhitespace are both on)
+    --------------------*/
+    --editor-special-char-color: var(--color-neutral-600);
+    --editor-highlight-space-color: hsl(var(--hsl-neutral-500) / 55%);
+    --editor-highlight-tab-opacity: 0.35;
+    --editor-trailing-space-background-color: hsl(var(--hsl-red-500) / 22%);
+    --editor-spelling-error-color: var(--color-red-500);
+    --editor-nes-ghost-color: var(--color-neutral-500);
+
+    /*-------------------
+      Panels, tooltips, completion
+    --------------------*/
+    --editor-panel-background-color: var(--color-neutral-900);
+    --editor-panel-color: var(--color-neutral-200);
+    --editor-panel-border-color: hsl(var(--hsl-neutral-600) / 45%);
+
+    --editor-tooltip-background-color: var(--color-neutral-950);
+    --editor-tooltip-border-color: hsl(var(--hsl-neutral-600) / 60%);
+    --editor-tooltip-border-style: solid;
+    --editor-tooltip-border-width: 1px;
+    --editor-tooltip-box-shadow: 0 4px 16px hsl(var(--hsl-neutral-950) / 60%);
+    --editor-tooltip-autocomplete-item-selected-background-color: hsl(var(--hsl-blue-500) / 22%);
+    --editor-tooltip-autocomplete-item-selected-color: var(--color-neutral-50);
+    --editor-tooltip-autocomplete-section-border-color: hsl(var(--hsl-neutral-600) / 45%);
+    --editor-completion-matched-text-color: var(--color-blue-500);
+    --editor-completion-matched-text-font-weight: 600;
+    --editor-completion-detail-color: var(--color-neutral-500);
+    --editor-completion-detail-font-style: italic;
+
+    --editor-inline-tooltip-background-color: var(--color-neutral-950);
+    --editor-inline-tooltip-color: var(--color-neutral-200);
+    --editor-inline-tooltip-outline: 1px solid hsl(var(--hsl-neutral-600) / 60%);
+
+    /*-------------------
+      Folding and widgets
+    --------------------*/
+    --editor-fold-placeholder-background-color: hsl(var(--hsl-neutral-700) / 70%);
+    --editor-fold-placeholder-color: var(--color-neutral-300);
+    --editor-fold-placeholder-border: 1px solid hsl(var(--hsl-neutral-600) / 50%);
+    --editor-image-widget-backdrop-background-color: hsl(var(--hsl-neutral-950) / 40%);
+    --editor-image-widget-backdrop-border: 1px solid hsl(var(--hsl-neutral-600) / 40%);
+
+    /*===================
+      Syntax tokens
+    ====================*/
+
+    /*-------------------
+      Comments - grey, italic
+    --------------------*/
+    --syntax-comment-color: var(--color-neutral-500); /* #727072 */
+    --syntax-comment-font-style: italic;
+    --syntax-line-comment-color: var(--color-neutral-500);
+    --syntax-line-comment-font-style: italic;
+    --syntax-block-comment-color: var(--color-neutral-500);
+    --syntax-block-comment-font-style: italic;
+    --syntax-doc-comment-color: var(--color-neutral-500);
+    --syntax-doc-comment-font-style: italic;
+
+    /*-------------------
+      Plain names - left at the foreground color.
+      This is the load-bearing choice in a Monokai theme: colouring every
+      identifier is what makes other themes noisy. Only the roles below get a color.
+    --------------------*/
+    --syntax-name-color: var(--editor-foreground-color);
+    --syntax-name-definition-color: var(--editor-foreground-color);
+    --syntax-variable-name-color: var(--editor-foreground-color);
+    --syntax-variable-name-definition-color: var(--editor-foreground-color);
+    --syntax-property-name-color: var(--editor-foreground-color);
+    --syntax-property-name-definition-color: var(--editor-foreground-color);
+    --syntax-content-color: var(--editor-foreground-color);
+
+    /*-------------------
+      Function names - green
+    --------------------*/
+    --syntax-name-function-color: var(--color-green-500); /* #A9DC76 */
+    --syntax-variable-name-function-color: var(--color-green-500);
+    --syntax-property-name-function-color: var(--color-green-500);
+
+    /*-------------------
+      Builtins and library names - cyan, italic.
+      `standard` is CodeMirror's tag for names the language itself provides
+      (Monokai Pro's `support.*`), which it italicises to set them apart from
+      names you wrote.
+    --------------------*/
+    --syntax-name-standard-color: var(--color-blue-500); /* #78DCE8 */
+    --syntax-variable-name-standard-color: var(--color-blue-500);
+    --syntax-property-name-standard-color: var(--color-blue-500);
+
+    /*-------------------
+      Parameters and language variables (this / self) - orange.
+      TODO(verify on v6): CodeMirror 6's tag names do not say which of these
+      carries a function's parameters. `local` is the strongest candidate but is
+      unconfirmed - open a JS/TS code block, inspect a parameter, and correct
+      this if it resolves elsewhere. Do not guess further than this.
+    --------------------*/
+    --syntax-variable-name-local-color: var(--color-orange-500); /* #FC9867 */
+    --syntax-name-local-color: var(--color-orange-500);
+    --syntax-property-name-local-color: var(--color-orange-500);
+    --syntax-self-color: var(--color-orange-500);
+    --syntax-modifier-color: var(--color-orange-500);
+    --syntax-label-name-color: var(--color-orange-500);
+
+    /*-------------------
+      Constants - purple
+    --------------------*/
+    --syntax-name-constant-color: var(--color-violet-500); /* #AB9DF2 */
+    --syntax-variable-name-constant-color: var(--color-violet-500);
+    --syntax-property-name-constant-color: var(--color-violet-500);
+    --syntax-number-color: var(--color-violet-500);
+    --syntax-integer-color: var(--color-violet-500);
+    --syntax-float-color: var(--color-violet-500);
+    --syntax-bool-color: var(--color-violet-500);
+    --syntax-null-color: var(--color-violet-500);
+    --syntax-atom-color: var(--color-violet-500);
+    --syntax-literal-color: var(--color-violet-500);
+    --syntax-character-color: var(--color-violet-500);
+    --syntax-unit-color: var(--color-violet-500);
+    --syntax-color-color: var(--color-violet-500);
+
+    /*-------------------
+      Strings - yellow
+    --------------------*/
+    --syntax-string-color: var(--color-yellow-500); /* #FFD866 */
+    --syntax-string-standard-color: var(--color-yellow-500);
+    --syntax-string-constant-color: var(--color-yellow-500);
+    /* Escapes inside a string are constants, not string content - purple, so
+       \n and %s stay findable in a wall of yellow. */
+    --syntax-string-special-color: var(--color-violet-500);
+    --syntax-regexp-color: var(--color-yellow-500);
+    --syntax-attribute-value-color: var(--color-yellow-500);
+
+    /*-------------------
+      Types, classes, namespaces - cyan
+    --------------------*/
+    --syntax-class-name-color: var(--color-blue-500);
+    --syntax-namespace-color: var(--color-blue-500);
+    --syntax-type-operator-color: var(--color-blue-500);
+
+    /*-------------------
+      Markup names - tags red, attributes green
+    --------------------*/
+    --syntax-tag-name-color: var(--color-red-500); /* #FF6188 */
+    --syntax-attribute-name-color: var(--color-green-500); /* #A9DC76 */
+    --syntax-macro-name-color: var(--color-green-500);
+    --syntax-annotation-color: var(--color-green-500);
+
+    /*-------------------
+      Keywords - red
+    --------------------*/
+    --syntax-keyword-color: var(--color-red-500);
+    --syntax-control-keyword-color: var(--color-red-500);
+    --syntax-definition-keyword-color: var(--color-red-500);
+    --syntax-module-keyword-color: var(--color-red-500);
+    --syntax-operator-keyword-color: var(--color-red-500);
+
+    /*-------------------
+      Operators - red
+    --------------------*/
+    --syntax-operator-color: var(--color-red-500);
+    --syntax-arithmetic-operator-color: var(--color-red-500);
+    --syntax-logic-operator-color: var(--color-red-500);
+    --syntax-bitwise-operator-color: var(--color-red-500);
+    --syntax-compare-operator-color: var(--color-red-500);
+    --syntax-update-operator-color: var(--color-red-500);
+    --syntax-definition-operator-color: var(--color-red-500);
+    --syntax-control-operator-color: var(--color-red-500);
+    --syntax-deref-operator-color: var(--color-red-500);
+
+    /*-------------------
+      Punctuation - dimmed, so structure recedes behind content
+    --------------------*/
+    --syntax-punctuation-color: var(--color-neutral-400); /* #939293 */
+    --syntax-separator-color: var(--color-neutral-400);
+    --syntax-bracket-color: var(--color-neutral-300);
+    --syntax-brace-color: var(--color-neutral-300);
+    --syntax-paren-color: var(--color-neutral-300);
+    --syntax-square-bracket-color: var(--color-neutral-300);
+    --syntax-angle-bracket-color: var(--color-neutral-300);
+
+    /*-------------------
+      Meta
+    --------------------*/
+    --syntax-meta-color: var(--color-neutral-400);
+    --syntax-document-meta-color: var(--color-neutral-500);
+    --syntax-processing-instruction-color: var(--color-neutral-400);
+
+    /*-------------------
+      Diffs
+    --------------------*/
+    --syntax-inserted-color: var(--color-green-500);
+    --syntax-deleted-color: var(--color-red-500);
+    --syntax-changed-color: var(--color-yellow-500);
+    --syntax-invalid-color: var(--color-red-500);
+    --syntax-invalid-border-bottom: 1px dotted var(--color-red-500);
+
+    /*===================
+      Markdown in the editor
+    ====================*/
+
+    /*-------------------
+      Headings - one hue per level, walking the palette warm to cool.
+
+      Chosen over the quieter alternative (accent for h1, neutral greys below)
+      because Inkdrop renders headings at close to body size in the editor:
+      weight alone does not separate six levels, and greys leave h3 and h5
+      indistinguishable. Hue does it at a glance. The cost is that a
+      heading-dense note becomes colorful; that was the accepted trade.
+
+      The preview does not mirror this, and cannot: Inkdrop exposes a single
+      --mde-preview-heading-color with no per-level variants. It does not need
+      them either - the preview renders headings at real display sizes, so size
+      carries the hierarchy there. See preview.css.
+    --------------------*/
+    --syntax-heading-color: var(--color-red-500);
+    --syntax-heading-font-weight: 700;
+    --syntax-heading-1-color: var(--color-red-500); /* #FF6188 */
+    --syntax-heading-1-font-weight: 700;
+    --syntax-heading-2-color: var(--color-orange-500); /* #FC9867 */
+    --syntax-heading-2-font-weight: 700;
+    --syntax-heading-3-color: var(--color-yellow-500); /* #FFD866 */
+    --syntax-heading-3-font-weight: 700;
+    --syntax-heading-4-color: var(--color-green-500); /* #A9DC76 */
+    --syntax-heading-4-font-weight: 600;
+    --syntax-heading-5-color: var(--color-blue-500); /* #78DCE8 */
+    --syntax-heading-5-font-weight: 600;
+    --syntax-heading-6-color: var(--color-violet-500); /* #AB9DF2 */
+    --syntax-heading-6-font-weight: 600;
+
+    /*-------------------
+      Inline markup
+    --------------------*/
+    --syntax-emphasis-color: var(--color-neutral-50);
+    --syntax-emphasis-font-style: italic;
+    --syntax-strong-color: var(--color-neutral-50);
+    --syntax-strong-font-weight: 700;
+    --syntax-strikethrough-text-decoration: line-through;
+    --syntax-link-color: var(--color-blue-500);
+    --syntax-link-text-decoration: underline;
+    --syntax-url-color: var(--color-blue-400);
+    --syntax-monospace-color: var(--color-yellow-500);
+    --syntax-quote-color: var(--color-neutral-400);
+    --syntax-quote-font-style: italic;
+    --syntax-list-color: var(--color-red-500);
+    --syntax-content-separator-color: var(--color-neutral-600);
+    --syntax-content-separator-font-weight: 400;
+
+    /*-------------------
+      Markdown block elements in the editor
+    --------------------*/
+    --md-inline-code-background-color: hsl(var(--hsl-neutral-950) / 70%);
+    --md-inline-code-border-color: hsl(var(--hsl-neutral-600) / 40%);
+    --md-inline-code-border-width: 1px;
+
+    --md-codeblock-background-color: hsl(var(--hsl-neutral-950) / 60%);
+    --md-codeblock-border-color: hsl(var(--hsl-neutral-600) / 35%);
+    --md-codeblock-border-width: 1px;
+    --md-codeblock-color: var(--color-neutral-100);
+
+    --md-blockquote-border-color: var(--color-neutral-600);
+
+    /* Nesting depth by hue, so a deep list is still readable at a glance. */
+    --md-list-mark-color: var(--color-red-500);
+    --md-list-mark-2-color: var(--color-yellow-500);
+    --md-list-mark-3-color: var(--color-blue-500);
+    --md-task-marker-font-weight: 700;
+
+    --md-table-background-color: hsl(var(--hsl-neutral-950) / 40%);
+    --md-table-border-color: hsl(var(--hsl-neutral-600) / 50%);
+    --md-table-border-width: 1px;
+
+    --md-inline-mark-background-color: hsl(var(--hsl-yellow-500) / 28%);
+    --md-inline-mark-text-color: var(--color-neutral-50);
+    --md-inline-mark-underline-color: hsl(var(--hsl-yellow-500) / 60%);
+  }
+
+  /*-------------------------------
+    Acrylic background window
+
+    Upstream sets --editor-background-color to transparent under acrylic so the
+    translucent --editor-background of the pane behind CodeMirror is what shows
+    through. The opaque value above is in theme.syntax, which outranks that
+    branch in theme.syntax.base, so without this the text area would stay solid
+    while the pane around it went translucent - acrylic broken in the one place
+    you actually look. Same trap as --page-background in ui.css.
+  --------------------------------*/
+
+  :root:has(body.acrylic-window) {
+    --editor-background-color: transparent;
+  }
+}
