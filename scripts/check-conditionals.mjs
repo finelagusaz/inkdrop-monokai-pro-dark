@@ -7,8 +7,8 @@
  * Inkdrop's built-in stylesheets sit in the *.base sublayers; a theme writes to
  * the parent layers, which outrank them - and layer order is decided before
  * selector specificity. So a plain `:root { --x: ... }` here beats a built-in
- * `:root:has(body.acrylic-window) { --x: ... }` there, silently disabling the
- * conditional behaviour that branch existed to provide.
+ * `:root:has(body.acrylic-window)` there, silently disabling the conditional
+ * behaviour that branch existed to provide.
  *
  * That is how acrylic support gets switched off: upstream sets
  * --page-background and --editor-background-color to transparent under
@@ -21,15 +21,24 @@
  * declare it unconditionally, we must also declare it under a matching
  * condition - or explicitly say we meant to flatten it.
  */
-import { readFileSync, existsSync, readdirSync } from 'node:fs'
+import { existsSync, readdirSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'
 import { dirname, join } from 'node:path'
+import { declarations, readCss } from './lib/css.mjs'
+import { styleSheetFiles } from './lib/theme.mjs'
 
-const root = join(dirname(fileURLToPath(import.meta.url)), '..')
-const upstreamDir = join(root, 'node_modules', '@inkdropapp', 'css')
+// Located through Node rather than by joining `node_modules/` by hand, which
+// only works while the install stays flat. The package ships no directory entry
+// point, so resolve a file inside it and take its directory.
+let upstreamDir
+try {
+  upstreamDir = dirname(fileURLToPath(import.meta.resolve('@inkdropapp/css/variables.json')))
+} catch {
+  upstreamDir = null
+}
 
-if (!existsSync(upstreamDir)) {
-  console.error('node_modules/@inkdropapp/css not found - run `npm install` first.')
+if (!upstreamDir || !existsSync(upstreamDir)) {
+  console.error('@inkdropapp/css not found - run `npm install` first.')
   process.exit(1)
 }
 
@@ -37,43 +46,12 @@ if (!existsSync(upstreamDir)) {
 const isConditional = header =>
   /:has\(|@media|@supports|@container/.test(header) && !/^@layer\b/.test(header)
 
-/**
- * Walk a stylesheet and yield every custom-property declaration together with
- * the stack of block headers enclosing it. Good enough for these files: they
- * are generated, well-formed, and contain no strings holding braces.
- */
-function* declarations(css) {
-  const src = css.replace(/\/\*[\s\S]*?\*\//g, '')
-  const stack = []
-  let buf = ''
-  for (const ch of src) {
-    if (ch === '{') {
-      stack.push(buf.trim().replace(/\s+/g, ' '))
-      buf = ''
-    } else if (ch === '}') {
-      stack.pop()
-      buf = ''
-    } else if (ch === ';') {
-      const m = /^\s*(--[a-z0-9-]+)\s*:/i.exec(buf)
-      if (m) yield { name: m[1], stack: [...stack] }
-      buf = ''
-    } else {
-      buf += ch
-    }
-  }
-}
-
 const conditionOf = stack => stack.filter(isConditional).join(' >> ')
 
-/** name -> Set of conditions it is declared under ('' meaning unconditional) */
-function index(css) {
-  const map = new Map()
-  for (const { name, stack } of declarations(css)) {
-    if (!map.has(name)) map.set(name, new Set())
-    map.get(name).add(conditionOf(stack))
-  }
-  return map
-}
+// The distinguishing token of a condition, so a broader selector than upstream's
+// still counts as handled. Add a trigger word here rather than nesting a branch.
+const TRIGGERS = ['acrylic-window', 'platform-win32']
+const triggerOf = cond => TRIGGERS.find(t => cond.includes(t)) ?? cond
 
 // --- upstream ---------------------------------------------------------------
 
@@ -82,8 +60,7 @@ let upstreamFiles = 0
 for (const file of readdirSync(upstreamDir)) {
   if (!file.endsWith('.css')) continue
   upstreamFiles++
-  const css = readFileSync(join(upstreamDir, file), 'utf8')
-  for (const { name, stack } of declarations(css)) {
+  for (const { name, stack } of declarations(readCss(join(upstreamDir, file)))) {
     const cond = conditionOf(stack)
     if (!cond) continue
     if (!upstream.has(name)) upstream.set(name, new Map())
@@ -93,15 +70,13 @@ for (const file of readdirSync(upstreamDir)) {
 
 // --- ours -------------------------------------------------------------------
 
-const FILES = ['tokens.css', 'ui.css', 'syntax.css', 'preview.css']
 const ours = new Map() // name -> { conditions: Set, files: Set }
-for (const file of FILES) {
-  const path = join(root, 'styles', file)
+for (const { file, path } of styleSheetFiles) {
   if (!existsSync(path)) continue
-  for (const [name, conds] of index(readFileSync(path, 'utf8'))) {
+  for (const { name, stack } of declarations(readCss(path))) {
     if (!ours.has(name)) ours.set(name, { conditions: new Set(), files: new Set() })
     const entry = ours.get(name)
-    for (const c of conds) entry.conditions.add(c)
+    entry.conditions.add(conditionOf(stack))
     entry.files.add(file)
   }
 }
@@ -115,18 +90,9 @@ for (const [name, entry] of ours) {
   if (!upstreamConds) continue
 
   for (const [cond, file] of upstreamConds) {
-    // Do we restate it under a condition mentioning the same trigger? Compare on
-    // the distinguishing token rather than the whole selector, so a broader
-    // selector than upstream's still counts as handled.
-    const trigger = /acrylic-window/.test(cond)
-      ? 'acrylic-window'
-      : /platform-win32/.test(cond)
-        ? 'platform-win32'
-        : cond
+    const trigger = triggerOf(cond)
     const handled = [...entry.conditions].some(c => c && c.includes(trigger))
-    if (!handled) {
-      problems.push({ name, cond, file, ours: [...entry.files].join(', ') })
-    }
+    if (!handled) problems.push({ name, cond, file, ours: [...entry.files].join(', ') })
   }
 }
 

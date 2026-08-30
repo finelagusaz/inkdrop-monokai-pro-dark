@@ -14,10 +14,11 @@
  * neutral ramp is grey by design.
  */
 import { readFileSync, existsSync } from 'node:fs'
-import { fileURLToPath } from 'node:url'
-import { dirname, join } from 'node:path'
+import { join } from 'node:path'
+import { angularDistance, chromaOf, hexToHsl, parseColor } from './lib/color.mjs'
+import { MONOKAI } from './lib/palette.mjs'
+import { root } from './lib/theme.mjs'
 
-const root = join(dirname(fileURLToPath(import.meta.url)), '..')
 const path = join(root, 'palette.json')
 
 if (!existsSync(path)) {
@@ -25,72 +26,23 @@ if (!existsSync(path)) {
   process.exit(1)
 }
 
-// Monokai Pro hue anchors, in degrees. Derived from the same six colors
-// scripts/gen-tokens.mjs anchors the ramps on, plus the sibling families it
-// spreads around them.
-const ANCHORS = [
-  { name: 'red', h: 345.2, spread: 20 },
-  { name: 'orange', h: 19.7, spread: 22 },
-  { name: 'yellow', h: 44.7, spread: 14 },
-  { name: 'green', h: 90.0, spread: 24 },
-  { name: 'cyan', h: 186.4, spread: 30 },
-  { name: 'violet', h: 249.9, spread: 22 },
-]
+// Monokai Pro hue anchors, taken from the same six colors gen-tokens anchors the
+// ramps on rather than transcribed - a hand-copied hue would keep grading the
+// theme against a palette it no longer uses. `violet` is what Inkdrop calls the
+// family Monokai calls purple.
+//
+// The spread is how far a sibling family may sit from its anchor, and stays
+// hand-tuned: it has to cover the largest hue shift gen-tokens applies to that
+// anchor's siblings, plus room for the rounding in a rendered value.
+const SPREAD = { red: 20, orange: 22, yellow: 14, green: 24, cyan: 30, violet: 22 }
+const ANCHORS = Object.entries(SPREAD).map(([name, spread]) => ({
+  name,
+  h: hexToHsl(MONOKAI[name === 'violet' ? 'purple' : name]).h,
+  spread,
+}))
 
 // Below this chroma a color is grey enough that its hue carries no meaning.
-// Chroma, not saturation: HSL saturation is misleading at the extremes of
-// lightness, where a 2/255 channel difference reports as 25% saturated. Monokai's
-// own foreground #FCFCFA is exactly that case, and judging it by saturation
-// files it as an off-hue yellow.
 const GREY_CHROMA = 6
-const chromaOf = ({ s, l }) => s * (1 - Math.abs((2 * l) / 100 - 1))
-
-const angularDistance = (a, b) => Math.abs(((a - b + 540) % 360) - 180)
-
-/** Parse the shapes generate-palette emits: hsl(...), #hex, rgb(...), or a keyword. */
-function parseColor(value) {
-  if (typeof value !== 'string') return null
-  const v = value.trim()
-
-  let m = /^hsla?\(\s*([\d.]+)deg\s+([\d.]+)%\s+([\d.]+)%\s*(?:\/\s*([\d.]+)%?\s*)?\)$/i.exec(v)
-  if (m) return { h: +m[1], s: +m[2], l: +m[3] }
-
-  m = /^#([0-9a-f]{3}|[0-9a-f]{6}|[0-9a-f]{8})$/i.exec(v)
-  if (m) {
-    let hex = m[1]
-    if (hex.length === 3) hex = [...hex].map(c => c + c).join('')
-    return rgbToHsl(
-      parseInt(hex.slice(0, 2), 16),
-      parseInt(hex.slice(2, 4), 16),
-      parseInt(hex.slice(4, 6), 16),
-    )
-  }
-
-  m = /^rgba?\(\s*([\d.]+)[,\s]+([\d.]+)[,\s]+([\d.]+)/i.exec(v)
-  if (m) return rgbToHsl(+m[1], +m[2], +m[3])
-
-  return null
-}
-
-function rgbToHsl(r, g, b) {
-  r /= 255
-  g /= 255
-  b /= 255
-  const max = Math.max(r, g, b)
-  const min = Math.min(r, g, b)
-  const l = (max + min) / 2
-  let h = 0
-  let s = 0
-  if (max !== min) {
-    const d = max - min
-    s = l > 0.5 ? d / (2 - max - min) : d / (max + min)
-    if (max === r) h = (g - b) / d + (g < b ? 6 : 0)
-    else if (max === g) h = (b - r) / d + 2
-    else h = (r - g) / d + 4
-    h /= 6
-  }
-  return { h: h * 360, s: s * 100, l: l * 100 }
-}
 
 const palette = JSON.parse(readFileSync(path, 'utf8'))
 
@@ -101,7 +53,8 @@ const hits = Object.fromEntries(ANCHORS.map(a => [a.name, 0]))
 
 for (const [name, value] of Object.entries(palette)) {
   const c = parseColor(value)
-  if (!c) continue
+  // A fully transparent value paints nothing, so it cannot be off-palette.
+  if (!c || c.a === 0) continue
   colors++
   if (chromaOf(c) < GREY_CHROMA) {
     greys++

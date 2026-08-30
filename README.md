@@ -88,8 +88,9 @@ through the design-token ramps, so replacing the ramps colors almost everything
 at once; `ui.css` then names the few dozen places where Inkdrop's assumptions and
 Monokai's differ. That is why `ui.css` is short.
 
-`tokens.css` is generated — edit the palette in `scripts/gen-tokens.mjs` and run
-`npm run tokens`, don't hand-edit the CSS.
+`tokens.css` is generated — edit the palette in `scripts/lib/palette.mjs` and run
+`npm run tokens`, don't hand-edit the CSS. The checks read that same palette, so
+moving an anchor moves what they grade the theme against.
 
 ### Checks
 
