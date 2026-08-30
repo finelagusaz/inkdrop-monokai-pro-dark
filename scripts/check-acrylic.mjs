@@ -21,12 +21,11 @@
  *     node scripts/check-acrylic.mjs
  */
 import puppeteer from 'puppeteer'
-import { readFileSync, existsSync, writeFileSync, rmSync } from 'node:fs'
-import { fileURLToPath, pathToFileURL } from 'node:url'
-import { dirname, join } from 'node:path'
-
-const root = join(dirname(fileURLToPath(import.meta.url)), '..')
-const pkg = JSON.parse(readFileSync(join(root, 'package.json'), 'utf8'))
+import { writeFileSync, rmSync } from 'node:fs'
+import { pathToFileURL } from 'node:url'
+import { join } from 'node:path'
+import { parseColor } from './lib/color.mjs'
+import { pkg, root, styleSheets } from './lib/theme.mjs'
 
 // Written next to the stylesheets so the page loads from a file:// origin.
 const tmp = join(root, '.acrylic-check.html')
@@ -50,18 +49,20 @@ const BASE_STYLESHEETS = [
 // document at about:blank, where a relative href resolves to nothing and every
 // stylesheet silently fails to load. A run where nothing loaded looks exactly
 // like a run where everything is unset, so resolve up front and fail loudly.
-const href = p => {
-  const abs = join(root, p)
-  if (!existsSync(abs)) {
-    console.error(`missing stylesheet: ${p}\n(run \`npm install\` first)`)
+// Resolved through Node the way generate-palette does it, rather than by joining
+// `node_modules/` by hand - that only works while the install stays flat.
+const href = spec => {
+  try {
+    return import.meta.resolve(spec)
+  } catch {
+    console.error(`cannot resolve stylesheet: ${spec}\n(run \`npm install\` first)`)
     process.exit(1)
   }
-  return pathToFileURL(abs).href
 }
 
 const sheets = [
-  ...BASE_STYLESHEETS.map(h => href(join('node_modules', h))),
-  ...pkg.styleSheets.map(f => href(join('styles', f))),
+  ...BASE_STYLESHEETS.map(href),
+  ...styleSheets.map(f => pathToFileURL(join(root, 'styles', f)).href),
 ]
 
 const page = bodyClass => `<!doctype html>
@@ -90,14 +91,9 @@ const WATCHED = [
 ]
 
 /** True when a color lets anything through: transparent, or alpha below 100%. */
-function isTranslucent(value) {
-  const v = String(value).trim()
-  if (v === 'transparent' || v === 'rgba(0, 0, 0, 0)') return true
-  let m = /^rgba?\([^)]*?[,/]\s*(0?\.\d+|0|1)\s*\)$/i.exec(v)
-  if (m) return parseFloat(m[1]) < 1
-  m = /\/\s*([\d.]+)%\s*\)/.exec(v) // hsl(... / 60%)
-  if (m) return parseFloat(m[1]) < 100
-  return false
+const isTranslucent = value => {
+  const c = parseColor(String(value))
+  return c !== null && c.a < 1
 }
 
 const browser = await puppeteer.launch({
@@ -132,12 +128,13 @@ try {
       }
     })
     if (!sentinels.base || !sentinels.theme) {
-      console.error(
+      // Thrown, not process.exit: this is mid-function, and exiting here would
+      // skip the finally block that closes the browser and removes the temp file.
+      throw new Error(
         `stylesheets did not apply (${sentinels.sheets} link elements; ` +
           `--font-name=${JSON.stringify(sentinels.base)}, ` +
           `--hsl-neutral-800=${JSON.stringify(sentinels.theme)}) - cannot judge anything`,
       )
-      process.exit(1)
     }
     return tab.evaluate(names => {
       const cs = getComputedStyle(document.documentElement)
@@ -149,15 +146,16 @@ try {
   }
 
   const base = `${pkg.name} dark-mode`
+  const LABELS = { plain: 'plain (no acrylic)', acrylic: 'acrylic', win32: 'acrylic + win32' }
   const states = {
-    'plain (no acrylic)': await read(base),
+    plain: await read(base),
     acrylic: await read(`${base} acrylic-window`),
-    'acrylic + win32': await read(`${base} acrylic-window platform-win32`),
+    win32: await read(`${base} acrylic-window platform-win32`),
   }
 
   const width = Math.max(...WATCHED.map(n => n.length))
-  for (const [label, values] of Object.entries(states)) {
-    console.log(`\n${label}`)
+  for (const [key, values] of Object.entries(states)) {
+    console.log(`\n${LABELS[key]}`)
     for (const n of WATCHED) {
       const v = values[n] || '(unset)'
       const mark = isTranslucent(v) ? 'see-through' : ''
@@ -190,7 +188,7 @@ try {
 
   // Windows composites its own layer behind the window, so the page needs a
   // scrim there rather than the full transparency it gets elsewhere.
-  const win32Page = states['acrylic + win32']['--page-background']
+  const win32Page = states.win32['--page-background']
   if (win32Page === states.acrylic['--page-background']) {
     problems.push(
       `--page-background did not change for platform-win32 (still "${win32Page}"). ` +
@@ -199,10 +197,10 @@ try {
   }
 
   // These must differ from the plain state, or the acrylic block never applied.
-  const unchanged = WATCHED.filter(
-    n => states.acrylic[n] === states['plain (no acrylic)'][n] && !isTranslucent(states.acrylic[n]),
+  const nothingChanged = WATCHED.every(
+    n => states.acrylic[n] === states.plain[n] && !isTranslucent(states.acrylic[n]),
   )
-  if (unchanged.length === WATCHED.length) {
+  if (nothingChanged) {
     problems.push('nothing changed between the plain and acrylic states - the branch never matched.')
   }
 

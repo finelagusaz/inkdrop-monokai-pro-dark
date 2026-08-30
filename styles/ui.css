@@ -24,6 +24,11 @@
    */
 
   :root {
+    /* Local alias - the seam between two surfaces, used by every border that
+       separates one pane from the next. Named so the four of them stay in step:
+       adjusting how hard a pane edge reads is one edit, not four. */
+    --monokai-seam: 1px solid hsl(var(--hsl-neutral-700) / 60%);
+
     /*-------------------
       Brand Colors
     --------------------*/
@@ -142,13 +147,13 @@
       Side Bar - the darkest surface
     --------------------*/
     --sidebar-background: var(--color-neutral-950); /* #19181A */
-    --sidebar-border-right: 1px solid hsl(var(--hsl-neutral-700) / 60%);
+    --sidebar-border-right: var(--monokai-seam);
     --sidebar-menu-item-color: var(--color-neutral-300);
     --sidebar-menu-active-item-color: var(--color-neutral-50);
     --sidebar-menu-item-active-background: hsl(var(--hsl-neutral-700) / 70%);
     --sidebar-menu-section-color: var(--color-neutral-500);
     --sidebar-sync-status-view-background: hsl(var(--hsl-neutral-900) / 60%);
-    --sidebar-sync-status-view-border-top: 1px solid hsl(var(--hsl-neutral-700) / 60%);
+    --sidebar-sync-status-view-border-top: var(--monokai-seam);
 
     /*-------------------
       Note List Bar - one step lighter than the sidebar
@@ -156,7 +161,7 @@
     /* The built-in default is 50% alpha over the page background. Opaque here so
        the three-surface progression stays legible when acrylic is off. */
     --note-list-bar-background: var(--color-neutral-900); /* #221F22 */
-    --note-list-bar-border-right: 1px solid hsl(var(--hsl-neutral-700) / 60%);
+    --note-list-bar-border-right: var(--monokai-seam);
     --note-list-bar-pinned-section-header-background: var(--color-neutral-950);
     --note-list-view-item-header-color: var(--color-neutral-100);
     --note-list-view-item-separator-border: 1px solid hsl(var(--hsl-neutral-700) / 50%);
@@ -171,7 +176,7 @@
     --editor-background: var(--color-neutral-800); /* #2D2A2E */
     --editor-floating-actions-background: hsl(var(--hsl-neutral-700) / 70%);
     --editor-drawer-background: var(--color-neutral-900);
-    --editor-drawer-border-left: 1px solid hsl(var(--hsl-neutral-700) / 60%);
+    --editor-drawer-border-left: var(--monokai-seam);
 
     /*-------------------
       Notifications

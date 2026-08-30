@@ -7,34 +7,23 @@
  *   node scripts/check-tokens.mjs
  */
 import { readFileSync } from 'node:fs'
+import { join } from 'node:path'
+import { hslToHex } from './lib/color.mjs'
+import { STEPS } from './lib/palette.mjs'
+import { root } from './lib/theme.mjs'
 
-const css = readFileSync(new URL('../styles/tokens.css', import.meta.url), 'utf8')
-
-const hslToHex = (h, s, l) => {
-  h /= 360
-  s /= 100
-  l /= 100
-  const f = n => {
-    const k = (n + h * 12) % 12
-    const a = s * Math.min(l, 1 - l)
-    return Math.round(255 * (l - a * Math.max(-1, Math.min(k - 3, Math.min(9 - k, 1)))))
-  }
-  return '#' + [f(0), f(8), f(4)].map(v => v.toString(16).padStart(2, '0')).join('').toUpperCase()
-}
+const css = readFileSync(join(root, 'styles', 'tokens.css'), 'utf8')
 
 const ramps = {}
-const re = /--hsl-([a-z]+)-(\d+):\s*([\d.]+)deg\s+([\d.]+)%\s+([\d.]+)%;/g
-for (const m of css.matchAll(re)) {
+for (const m of css.matchAll(/--hsl-([a-z]+)-(\d+):\s*([\d.]+)deg\s+([\d.]+)%\s+([\d.]+)%;/g)) {
   const [, family, step, h, s, l] = m
-  ;(ramps[family] ??= {})[step] = { h: +h, s: +s, l: +l, hex: hslToHex(+h, +s, +l) }
+  ;(ramps[family] ??= {})[step] = { l: +l, hex: hslToHex(+h, +s, +l) }
 }
 
-const STEPS = [50, 100, 200, 300, 400, 500, 600, 700, 800, 900, 950]
 const problems = []
 
 for (const [family, ramp] of Object.entries(ramps)) {
-  const row = STEPS.map(s => ramp[s]?.hex ?? '  ??????').join(' ')
-  console.log(family.padEnd(9), row)
+  console.log(family.padEnd(9), STEPS.map(s => ramp[s]?.hex ?? '  ??????').join(' '))
 
   for (const step of STEPS) {
     if (!ramp[step]) problems.push(`${family}-${step} missing`)

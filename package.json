@@ -26,14 +26,16 @@
     "LICENSE"
   ],
   "scripts": {
-    "tokens": "node scripts/gen-tokens.mjs > styles/tokens.css && node scripts/check-tokens.mjs",
+    "tokens": "node scripts/gen-tokens.mjs && node scripts/check-tokens.mjs",
     "palette": "generate-palette",
     "check": "node scripts/check-tokens.mjs && node scripts/check-variables.mjs && node scripts/check-conditionals.mjs && node scripts/audit-palette.mjs && node scripts/check-acrylic.mjs",
     "prepublishOnly": "generate-palette",
     "acrylic": "node scripts/check-acrylic.mjs"
   },
   "devDependencies": {
-    "@inkdropapp/theme-dev-helpers": "^0.6.1"
+    "@inkdropapp/css": "^0.9.11",
+    "@inkdropapp/theme-dev-helpers": "^0.6.1",
+    "puppeteer": "^25.8.0"
   },
   "engines": {
     "inkdrop": "^6.0.0"
